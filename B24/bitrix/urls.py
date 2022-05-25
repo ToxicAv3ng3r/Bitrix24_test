@@ -7,5 +7,5 @@ app_name = 'bitrix'
 urlpatterns = [
     path('', views.index, name='index'),
     path('b24_auth/', views.auth_b24, name='auth'),
-    path('user/', views.show_curr_user, name='current_user')
+    path('users/', views.show_users, name='users')
 ]

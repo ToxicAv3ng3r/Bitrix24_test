@@ -5,7 +5,13 @@
     <title>Текущий пользователь</title>
 </head>
 <body>
-  <p>Текущий пользователь: {{ last_name }} {{ name }} {{ second_name }}</p>
-  <p>Почта: {{ email }}</p>
+  <p>Список сотрудников в моем bitrix24:</p>
+  {% for user_dict in users %}
+    <ul>
+      <li>
+        ФИО: {{ user_dict.LAST_NAME }} {{ user_dict.NAME }} {{ user_dict.SECOND_NAME }}, почта: {{ user_dict.EMAIL }}
+      </li>
+    </ul>
+  {% endfor %}
 </body>
 </html>

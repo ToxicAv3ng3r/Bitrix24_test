@@ -113,3 +113,10 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+#  Данные приложения bitrix24
+CLIENT_ID = 'local.628bbf7e970412.73001540'
+CLIENT_SECRET = 'xOfsk9ubJZdFv60WK6nCtEUgEhl5xG2vVyTG0Lz25zwcMFGHPg'
+
+#  Константы
+SECONDS_IN_MINUTE = 3600

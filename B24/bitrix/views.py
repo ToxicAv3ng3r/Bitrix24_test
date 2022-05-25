@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect
+from django.conf import settings
 
 import requests
 
@@ -10,16 +11,16 @@ from .models import Token
 def get_new_token():
     """Функция получения нового токена."""
     refresh_token = Token.objects.latest('create').rfh_token
-    data = {
+    params = {
         'grant_type': 'refresh_token',
-        'client_id': 'local.628bbf7e970412.73001540',
-        'client_secret': 'xOfsk9ubJZdFv60WK6nCtEUgEhl5xG2vVyTG0Lz25zwcMFGHPg',
+        'client_id': settings.CLIENT_ID,
+        'client_secret': settings.CLIENT_SECRET,
         'refresh_token': refresh_token
     }
 
     response = requests.get(
         url='https://oauth.bitrix.info/oauth/token/',
-        data=data
+        params=params
     ).json()
     acc_token = response.get('access_token')
     rfh_token = response.get('refresh_token')
@@ -39,15 +40,15 @@ def index(request):
 def auth_b24(request):
     """Получает запрос от сервера авторизации, записывает токен в БД"""
     code = request.get_full_path().split('=')[1].split('&')[0]
-    data = {
+    params = {
         'grant_type': 'authorization_code',
-        'client_id': 'local.628bbf7e970412.73001540',
-        'client_secret': 'xOfsk9ubJZdFv60WK6nCtEUgEhl5xG2vVyTG0Lz25zwcMFGHPg',
+        'client_id': settings.CLIENT_ID,
+        'client_secret': settings.CLIENT_SECRET,
         'code': code
     }
     response = requests.get(
         url=f'https://oauth.bitrix.info/oauth/token/',
-        data=data
+        params=params
     )
     dat = response.json()
     acc_token = dat.get('access_token')
@@ -57,26 +58,21 @@ def auth_b24(request):
         rfh_token=rfh_token,
     )
 
-    return redirect('bitrix:current_user')
+    return redirect('bitrix:users')
 
 
-def show_curr_user(request):
-    """Страница отображает текущего авторизованного пользователя"""
+def show_users(request):
+    """Страница отображает всех пользователей в bitrix24"""
     token = Token.objects.latest('create')
     acc_token = token.acc_token
-    if (datetime.now(timezone.utc) - token.create).seconds > 3600:
+    if ((datetime.now(timezone.utc) - token.create).seconds
+            > settings.SECONDS_IN_MINUTE):
         acc_token = get_new_token()
     response_curr_user = requests.get(
-        url=f'https://b24-iqhkzt.bitrix24.ru/rest/user.current?auth={acc_token}')
-    curr_user = response_curr_user.json().get('result')
-    name = curr_user.get('NAME')
-    last_name = curr_user.get('LAST_NAME')
-    second_name = curr_user.get('SECOND_NAME')
-    email = curr_user.get('EMAIL')
+        url=f'https://b24-iqhkzt.bitrix24.ru/rest/user.get?auth={acc_token}'
+    )
+    users = response_curr_user.json().get('result')
     context = {
-        "name": name,
-        "last_name": last_name,
-        "second_name": second_name,
-        "email": email
+        "users": users
     }
     return render(request, 'bitrix/user.html', context)
