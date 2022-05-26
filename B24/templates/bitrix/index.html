@@ -7,6 +7,6 @@
 <body>
   <p>Запустилось!! You are breathtaking!</p>
   <p>Для работы необходимо авторизоваться через bitrix24</p>
-  <a href="https://b24-iqhkzt.bitrix24.ru/oauth/authorize/?client_id=local.628bbf7e970412.73001540&response_type=code">Авторизоваться</a>
+  <a href="{% url 'bitrix:auth_redir' %}">Авторизоваться</a>
 </body>
 </html>
